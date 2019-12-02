@@ -251,7 +251,21 @@ public class DBProject {
       }while (true);
       return input;
    }//end readChoice
-
+	
+	/*
+    * Prints a prompt and gets user input.
+    * @String
+    **/
+	public static String valuePrompt(String prompt) throws Exception {
+		try {
+			System.out.print(String.format("\t%s $", prompt));
+			String input = in.readLine();
+			return input;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+			
    
    public static void addCustomer(DBProject esql){
 	  // Given customer details add the customer in the DB 
@@ -260,18 +274,41 @@ public class DBProject {
       // ...
    }//end addCustomer
 
-   public static void addRoom(DBProject esql){
-	  // Given room details add the room in the DB
-      // Your code goes here.
-      // ...
-      // ...
-   }//end addRoom
 
-   public static void addMaintenanceCompany(DBProject esql){
-      // Given maintenance Company details add the maintenance company in the DB
-      // ...
-      // ...
-   }//end addMaintenanceCompany
+	public static void addRoom(DBProject esql){
+		// Given room details add the room in the DB
+		try {
+			String hotelid = valuePrompt("Enter hotelid:");
+			String roomno = valuePrompt("Enter roomno:");
+			String roomtype = valuePrompt("Enter roomtype:");
+
+			String query = String.format("INSERT INTO room VALUES (%s, %s, '%s');", hotelid, roomno, roomtype);
+
+			int rowCount = esql.executeQuery(query);
+			System.out.println ("total row(s): " + rowCount);
+		} catch(Exception e){
+			System.err.println (e.getMessage());
+		}
+	}
+
+
+	public static void addMaintenanceCompany(DBProject esql){
+		// Given maintenance Company details add the maintenance company in the DB
+		// KEVIN
+		try {
+			String cmpid = valuePrompt("Enter cmpid:");
+			String name = valuePrompt("Enter name:");
+			String address = valuePrompt("Enter address:");
+			String iscertified = valuePrompt("Is this company certified? (y/n)");
+
+			String query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
+
+			int rowCount = esql.executeQuery(query);
+			System.out.println ("total row(s): " + rowCount);
+		} catch(Exception e){
+			System.err.println (e.getMessage());
+		}
+	}
 
    public static void addRepair(DBProject esql){
 	  // Given repair details add repair in the DB
@@ -280,19 +317,28 @@ public class DBProject {
       // ...
    }//end addRepair
 
-   public static void bookRoom(DBProject esql){
-	  // Given hotelID, roomNo and customer Name create a booking in the DB 
-      // Your code goes here.
-      // ...
-      // ...
-   }//end bookRoom
+	public static void bookRoom(DBProject esql){
+		// Given hotelID, roomNo and customer Name create a booking in the DB 
+		// QUESTION: Is this supposed to be customer id?
+		// KEVIN
+		try {
+			String hotelid = valuePrompt("Enter hotelid:");
+			String roomno = valuePrompt("Enter roomno:");
+			String customerName = valuePrompt("Enter customer name:");
+			
+			String query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
+
+			int rowCount = esql.executeQuery(query);
+			System.out.println ("total row(s): " + rowCount);
+		} catch(Exception e){
+			System.err.println (e.getMessage());
+		}
+	}
 
    public static void assignHouseCleaningToRoom(DBProject esql){
 	  // Given Staff SSN, HotelID, roomNo Assign the staff to the room 
-      // Your code goes here.
-      // ...
-      // ...
-   }//end assignHouseCleaningToRoom
+      // KEVIN
+   }
    
    public static void repairRequest(DBProject esql){
 	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
@@ -303,23 +349,17 @@ public class DBProject {
    
    public static void numberOfAvailableRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms available 
-      // Your code goes here.
-      // ...
-      // ...
+      // KEVIN
    }//end numberOfAvailableRooms
    
    public static void numberOfBookedRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms booked
-      // Your code goes here.
-      // ...
-      // ...
+      // KEVIN
    }//end numberOfBookedRooms
    
    public static void listHotelRoomBookingsForAWeek(DBProject esql){
 	  // Given a hotelID, date - list all the rooms available for a week(including the input date) 
-      // Your code goes here.
-      // ...
-      // ...
+      // KEVIN
    }//end listHotelRoomBookingsForAWeek
    
    public static void topKHighestRoomPriceForADateRange(DBProject esql){
@@ -352,9 +392,7 @@ public class DBProject {
    
    public static void topKMaintenanceCompany(DBProject esql){
 	  // List Top K Maintenance Company Names based on total repair count (descending order)
-      // Your code goes here.
-      // ...
-      // ...
+      // KEVIN
    }//end topKMaintenanceCompany
    
    public static void numberOfRepairsForEachRoomPerYear(DBProject esql){
