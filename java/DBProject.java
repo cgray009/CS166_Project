@@ -266,6 +266,12 @@ public class DBProject {
 			throw e;
 		}
 	}
+	/*
+	public static ResultSet getQueryResult(DBProject esql, String query) {
+		Statement stmt = esql._connection.createStatement ();
+		ResultSet rs = stmt.executeQuery (query);
+		return rs;
+	}*/
 			
    
    public static void addCustomer(DBProject esql){
@@ -323,6 +329,9 @@ public class DBProject {
 			String roomno = valuePrompt("Enter roomno:");
 			String customerFName = valuePrompt("Enter customer first name:");
 			String customerLName = valuePrompt("Enter customer last name:");
+			String bookingdate = valuePrompt("Enter booking date:");
+			String noofpeople = valuePrompt("Enter number of people:");
+			String price = valuePrompt("Enter price:");
 
 			Statement stmt = esql._connection.createStatement ();
 			String query = String.format("SELECT customerid FROM customer WHERE fname='%s' AND lname='%s';", customerFName, customerLName);
@@ -337,11 +346,25 @@ public class DBProject {
 			
 			String customerId = rs.getString(1);
 			
+			query = "SELECT COUNT(*) FROM booking;";
+			rs = stmt.executeQuery (query);
+			rsmd = rs.getMetaData ();
+			
+			// If first row does not exist...
+			if(!(rs.next() && rsmd.getColumnCount() == 1)) {
+				System.err.println(String.format("Could not calculate COUNT(*) on booking", customerFName, customerLName));
+				return;
+			}
+			
+			int bookingCount = Integer.parseInt(rs.getString(1));
+			int bid = bookingCount + 1;
+			
+			
 			//ajoo                           | kpiy   
 			
-			//query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
+			query = String.format("INSERT INTO booking VALUES (%d, %s, %s, %s, '%s', %s, %s);", bid, customerId, hotelid, roomno, bookingdate, noofpeople, price);
 
-			//esql.executeUpdate(query);
+			esql.executeUpdate(query);
 			
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
