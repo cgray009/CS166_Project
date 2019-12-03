@@ -284,9 +284,8 @@ public class DBProject {
 
 			String query = String.format("INSERT INTO room VALUES (%s, %s, '%s');", hotelid, roomno, roomtype);
 
-			int rowCount = esql.executeQuery(query);
-			System.out.println ("total row(s): " + rowCount);
-		} catch(Exception e){
+			esql.executeUpdate(query);
+		} catch(Exception e) {
 			System.err.println (e.getMessage());
 		}
 	}
@@ -303,9 +302,8 @@ public class DBProject {
 
 			String query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
 
-			int rowCount = esql.executeQuery(query);
-			System.out.println ("total row(s): " + rowCount);
-		} catch(Exception e){
+			esql.executeUpdate(query);
+		} catch(Exception e) {
 			System.err.println (e.getMessage());
 		}
 	}
@@ -319,18 +317,32 @@ public class DBProject {
 
 	public static void bookRoom(DBProject esql){
 		// Given hotelID, roomNo and customer Name create a booking in the DB 
-		// QUESTION: Is this supposed to be customer id?
-		// KEVIN
 		try {
 			String hotelid = valuePrompt("Enter hotelid:");
 			String roomno = valuePrompt("Enter roomno:");
-			String customerName = valuePrompt("Enter customer name:");
-			
-			String query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
+			String customerFName = valuePrompt("Enter customer first name:");
+			String customerLName = valuePrompt("Enter customer last name:");
 
-			int rowCount = esql.executeQuery(query);
-			System.out.println ("total row(s): " + rowCount);
-		} catch(Exception e){
+			Statement stmt = esql._connection.createStatement ();
+			String query = String.format("SELECT customerid FROM customer WHERE fname='%s' AND lname='%s';", customerFName, customerLName);
+			ResultSet rs = stmt.executeQuery (query);
+			ResultSetMetaData rsmd = rs.getMetaData ();
+			
+			// If first row does not exist...
+			if(!(rs.next() && rsmd.getColumnCount() == 1)) {
+				System.err.println(String.format("No customer with name %s %s", customerFName, customerLName));
+				return;
+			}
+			
+			String customerId = rs.getString(1);
+			
+			//ajoo                           | kpiy   
+			
+			//query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
+
+			//esql.executeUpdate(query);
+			
+		} catch(Exception e) {
 			System.err.println (e.getMessage());
 		}
 	}
