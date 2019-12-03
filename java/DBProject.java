@@ -266,12 +266,7 @@ public class DBProject {
 			throw e;
 		}
 	}
-	/*
-	public static ResultSet getQueryResult(DBProject esql, String query) {
-		Statement stmt = esql._connection.createStatement ();
-		ResultSet rs = stmt.executeQuery (query);
-		return rs;
-	}*/
+
 			
    
    public static void addCustomer(DBProject esql){
