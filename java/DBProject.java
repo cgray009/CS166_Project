@@ -352,11 +352,17 @@ public class DBProject {
 		}
 	}
 
-   public static void addRepair(DBProject esql){
+   public static void addRepair(DBProject esql)
+   {
 	  // Given repair details add repair in the DB
-      // Your code goes here.
-      // ...
-      // ...
+      // User inputs
+	  String rID = valuePrompt("Enter hotelid:");
+	  String hotelID = valuePrompt("Enter customer first name:");
+	  String roomNo = valuePrompt("Enter customer last name:");
+	  String mCompany  = valuePrompt("Enter roomno:");
+	  String repairDate= valuePrompt("Enter booking date:");
+	  String description = valuePrompt("Enter number of people:");
+	  String repairType = valuePrompt("Enter price:");
    }//end addRepair
 
 	public static void bookRoom(DBProject esql){
@@ -436,11 +442,10 @@ public class DBProject {
 		}
    }
    
-   public static void repairRequest(DBProject esql){
+   public static void repairRequest(DBProject esql)
+   {
 	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
-      // Your code goes here.
-      // ...
-      // ...
+      
    }//end repairRequest
    
 	public static void numberOfAvailableRooms(DBProject esql){
