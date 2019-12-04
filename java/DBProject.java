@@ -483,11 +483,52 @@ public class DBProject {
       // ...
    }//end topKHighestPriceBookingsForACustomer
    
-   public static void totalCostForCustomer(DBProject esql){
+   public static void totalCostForCustomer(DBProject esql)
+   {
 	  // Given a hotelID, customer Name and date range get the total cost incurred by the customer
-      // Your code goes here.
-      // ...
-      // ...
+      try {
+			// User inputs
+			String hotelid = valuePrompt("Enter hotelid:");
+			String customerFName = valuePrompt("Enter customer first name:");
+			String customerLName = valuePrompt("Enter customer last name:");
+			String bookingdate = valuePrompt("Enter booking date:");
+			String query;
+			
+			
+			// Calculated values
+			String customerId;
+			int bid;
+			
+			
+			// Get customer id of customer
+			query = String.format("SELECT customerid FROM customer WHERE fname='%s' AND lname='%s';", customerFName, customerLName);
+			try 
+			{
+				customerId = getFirstElement(esql, query);
+			} 
+			catch(Exception e) 
+			{
+				throw new Exception(String.format("Could not find customer with name %s %s", customerFName, customerLName));
+			}
+
+
+			// Calculate next booking id (bid)
+			bid = countRowsOfTable(esql, "booking") + 1;
+			
+			
+			// Update table
+			query = String.format("INSERT INTO booking VALUES (%d, %s, %s, %s, '%s', %s, %s);", bid, customerId, hotelid, roomno, bookingdate, noofpeople, price);
+			esql.executeUpdate(query);
+			
+			
+			// Print message success
+			System.out.println("\nSuccessfully added booking.\n");
+			
+		} 
+		catch(Exception e) 
+		{
+			System.err.println (e.getMessage());
+		}
    }//end totalCostForCustomer
    
    public static void listRepairsMade(DBProject esql){
