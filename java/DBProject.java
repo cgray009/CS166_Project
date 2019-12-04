@@ -266,6 +266,31 @@ public class DBProject {
 			throw e;
 		}
 	}
+	
+	/*
+	 * Gets the first column of the first row of the query
+	 * @String
+	 **/
+	public static String getFirstElement(DBProject esql, String query) throws Exception {
+		Statement stmt = esql._connection.createStatement ();
+		ResultSet rs = stmt.executeQuery (query);
+		ResultSetMetaData rsmd = rs.getMetaData ();
+		
+		// If first row does not exist...
+		if(!(rs.next() && rsmd.getColumnCount() == 1)) {
+			throw new Exception("Could not get first row from query. Maybe query result is empty?");
+		}
+		
+		return rs.getString(1);
+	}
+	
+	public static int countRowsOfTable(DBProject esql, String tableName) throws Exception {
+		try {
+			return Integer.parseInt(getFirstElement(esql, String.format("SELECT COUNT(*) FROM %s;", tableName)));
+		} catch (Exception e) {
+			throw new Exception(String.format("Could not count rows of %s", tableName));
+		}
+	}
 
 			
    
@@ -285,8 +310,10 @@ public class DBProject {
 			String roomtype = valuePrompt("Enter roomtype:");
 
 			String query = String.format("INSERT INTO room VALUES (%s, %s, '%s');", hotelid, roomno, roomtype);
-
+	
 			esql.executeUpdate(query);
+			
+			System.out.println("\nSuccessfully added room.\n");
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
 		}
@@ -305,6 +332,8 @@ public class DBProject {
 			String query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
 
 			esql.executeUpdate(query);
+			
+			System.out.println("\nSuccessfully added maintenance company.\n");
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
 		}
@@ -320,6 +349,7 @@ public class DBProject {
 	public static void bookRoom(DBProject esql){
 		// Given hotelID, roomNo and customer Name create a booking in the DB 
 		try {
+			// User inputs
 			String hotelid = valuePrompt("Enter hotelid:");
 			String roomno = valuePrompt("Enter roomno:");
 			String customerFName = valuePrompt("Enter customer first name:");
@@ -327,39 +357,34 @@ public class DBProject {
 			String bookingdate = valuePrompt("Enter booking date:");
 			String noofpeople = valuePrompt("Enter number of people:");
 			String price = valuePrompt("Enter price:");
+			String query;
+			
+			
+			// Calculated values
+			String customerId;
+			int bid;
+			
+			
+			// Get customer id of customer
+			query = String.format("SELECT customerid FROM customer WHERE fname='%s' AND lname='%s';", customerFName, customerLName);
+			try {
+				customerId = getFirstElement(esql, query);
+			} catch(Exception e) {
+				throw new Exception(String.format("Could not find customer with name %s %s", customerFName, customerLName));
+			}
 
-			Statement stmt = esql._connection.createStatement ();
-			String query = String.format("SELECT customerid FROM customer WHERE fname='%s' AND lname='%s';", customerFName, customerLName);
-			ResultSet rs = stmt.executeQuery (query);
-			ResultSetMetaData rsmd = rs.getMetaData ();
-			
-			// If first row does not exist...
-			if(!(rs.next() && rsmd.getColumnCount() == 1)) {
-				System.err.println(String.format("No customer with name %s %s", customerFName, customerLName));
-				return;
-			}
-			
-			String customerId = rs.getString(1);
-			
-			query = "SELECT COUNT(*) FROM booking;";
-			rs = stmt.executeQuery (query);
-			rsmd = rs.getMetaData ();
-			
-			// If first row does not exist...
-			if(!(rs.next() && rsmd.getColumnCount() == 1)) {
-				System.err.println(String.format("Could not calculate COUNT(*) on booking", customerFName, customerLName));
-				return;
-			}
-			
-			int bookingCount = Integer.parseInt(rs.getString(1));
-			int bid = bookingCount + 1;
+
+			// Calculate next booking id (bid)
+			bid = countRowsOfTable(esql, "booking") + 1;
 			
 			
-			//ajoo                           | kpiy   
-			
+			// Update table
 			query = String.format("INSERT INTO booking VALUES (%d, %s, %s, %s, '%s', %s, %s);", bid, customerId, hotelid, roomno, bookingdate, noofpeople, price);
-
 			esql.executeUpdate(query);
+			
+			
+			// Print message success
+			System.out.println("\nSuccessfully added booking.\n");
 			
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
@@ -369,6 +394,33 @@ public class DBProject {
    public static void assignHouseCleaningToRoom(DBProject esql){
 	  // Given Staff SSN, HotelID, roomNo Assign the staff to the room 
       // KEVIN
+		try {
+			// User inputs
+			String staffssn = valuePrompt("Enter staff ssn:");
+			String hotelid = valuePrompt("Enter hotel id:");
+			String roomno = valuePrompt("Enter room no:");
+			String query;
+			
+			
+			// Calculated values
+			int asgid;
+			
+			
+			// Calculate next booking id (bid)
+			asgid = countRowsOfTable(esql, "assigned") + 1;
+
+			
+			// Update table
+			query = String.format("INSERT INTO assigned VALUES (%d, %s, %s, %s);", asgid, staffssn, hotelid, roomno);
+			esql.executeUpdate(query);
+			
+			
+			// Print message success
+			System.out.println("\nSuccessfully assigned cleaning staff to room.\n");
+			
+		} catch(Exception e) {
+			System.err.println (e.getMessage());
+		}
    }
    
    public static void repairRequest(DBProject esql){
@@ -378,10 +430,21 @@ public class DBProject {
       // ...
    }//end repairRequest
    
-   public static void numberOfAvailableRooms(DBProject esql){
-	  // Given a hotelID, get the count of rooms available 
-      // KEVIN
-   }//end numberOfAvailableRooms
+	public static void numberOfAvailableRooms(DBProject esql){
+		// Given a hotelID, get the count of rooms available 
+		// KEVIN
+		try {
+			// User inputs
+			String hotelid = valuePrompt("Enter hotel id:");
+			
+			
+			// Calculated values
+			int roomCount;
+			
+		} catch (Exception e) {
+			
+		}
+	}//end numberOfAvailableRooms
    
    public static void numberOfBookedRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms booked
