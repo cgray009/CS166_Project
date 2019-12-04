@@ -312,6 +312,7 @@ public class DBProject {
 	   catch(Exception e)
 	   {
 		   System.err.println(e.getMessage());
+	   }
    }
 
 
@@ -419,7 +420,7 @@ public class DBProject {
 			int asgid;
 			
 			
-			// Calculate next booking id (bid)
+			// Calculate next assignment id (asgid)
 			asgid = countRowsOfTable(esql, "assigned") + 1;
 
 			
@@ -449,25 +450,76 @@ public class DBProject {
 		try {
 			// User inputs
 			String hotelid = valuePrompt("Enter hotel id:");
+			String query;
 			
-			
+
 			// Calculated values
-			int roomCount;
+			String roomCount;
+			
+			
+			// Calculate rooms
+			query = String.format("SELECT COUNT(a.*) FROM ((SELECT r.hotelid, r.roomno FROM room r) EXCEPT (SELECT b.hotelid, b.roomno FROM booking b)) a WHERE a.hotelid=%s;", hotelid);
+			roomCount = getFirstElement(esql, query);
+			
+			
+			// Print message
+			System.out.println(String.format("\nThere are %s available rooms in hotel %s\n", roomCount, hotelid));
 			
 		} catch (Exception e) {
-			
+			System.err.println (e.getMessage());
 		}
-	}//end numberOfAvailableRooms
+	}
    
    public static void numberOfBookedRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms booked
       // KEVIN
-   }//end numberOfBookedRooms
+      try {
+			// User inputs
+			String hotelid = valuePrompt("Enter hotel id:");
+			String query;
+			
+
+			// Calculated values
+			String roomCount;
+			
+			
+			// Calculate rooms
+			query = String.format("SELECT COUNT((b.hotelid, b.roomno)) FROM booking b WHERE b.hotelid=%s;", hotelid);
+			roomCount = getFirstElement(esql, query);
+			
+			
+			// Print message
+			System.out.println(String.format("\nThere are %s booked rooms in hotel %s\n", roomCount, hotelid));
+			
+		} catch (Exception e) {
+			System.err.println (e.getMessage());
+		}
+   }
    
-   public static void listHotelRoomBookingsForAWeek(DBProject esql){
-	  // Given a hotelID, date - list all the rooms available for a week(including the input date) 
-      // KEVIN
-   }//end listHotelRoomBookingsForAWeek
+	public static void listHotelRoomBookingsForAWeek(DBProject esql){
+		// Given a hotelID, date - list all the rooms available for a week(including the input date) 
+		// KEVIN
+		try {
+			// User inputs
+			String hotelid = valuePrompt("Enter hotel id:");
+			String date = valuePrompt("Enter date:");
+			String query;
+			
+			
+			query = String.format(
+				"SELECT k.hotelid, k.roomno FROM " +
+				"((SELECT r.hotelid, r.roomno FROM room r) EXCEPT (SELECT b.hotelid, b.roomno FROM booking b)) a, booking k " +
+				"WHERE k.hotelid = a.hotelid AND k.roomno = a.roomno AND "+
+				"k.bookingdate >= DATE_TRUNC('week', TO_TIMESTAMP(%s, 'MM/DD/YYYY HH24:MI:SS')) AND k.bookingdate <= DATE_TRUNC('week', TO_TIMESTAMP(%s, 'MM/DD/YYYY HH24:MI:SS')) + 7;",
+				date, date);
+			esql.executeQuery(query);
+			
+			
+			
+		} catch (Exception e) {
+			System.err.println (e.getMessage());
+		}
+	}
    
    public static void topKHighestRoomPriceForADateRange(DBProject esql){
 	  // List Top K Rooms with the highest price for a given date range
