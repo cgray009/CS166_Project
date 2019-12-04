@@ -269,12 +269,25 @@ public class DBProject {
 
 			
    
-   public static void addCustomer(DBProject esql){
-	  // Given customer details add the customer in the DB 
-      // Your code goes here.
-      // ...
-      // ...
-   }//end addCustomer
+   public static void addCustomer(DBProject esql)
+   {
+	   try 
+	   {
+		   String customerID = valuePrompt("Enter costumer ID:");
+		   String fName = valuePrompt("Enter first name:");
+		   String lName = valuePrompt("Enter last name:");  
+		   String Address = valuePrompt("Enter address:");
+		   String phNo = valuePrompt("Enter phone number:");
+		   String DOB = valuePrompt("Enter date of birth:");  
+		   String gender = valuePrompt("Enter gender type:");
+		   
+		   String query = String.format("INSERT INTO customer VALUES (%s, %s, '%s', %s, %s, '%s', '%s);", customerID, fName, lName, Address, phNo, DOB, gender);
+		   esql.executeUpdate(query);
+	   }
+	   catch(Exception e)
+	   {
+		   System.err.println(e.getMessage());
+   }
 
 
 	public static void addRoom(DBProject esql){
