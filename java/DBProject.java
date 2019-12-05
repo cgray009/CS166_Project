@@ -555,18 +555,42 @@ public class DBProject {
 		}
 	}
    
-   public static void topKHighestRoomPriceForADateRange(DBProject esql){
-	  // List Top K Rooms with the highest price for a given date range
-      // Your code goes here.
-      // ...
-      // ...
+   public static void topKHighestRoomPriceForADateRange(DBProject esql)
+   {
+	// List Top K Rooms with the highest price for a given date range
+        try
+	{
+		String start_date = valuePrompt("Enter beginning of date range:");
+		String end_date = valuePrompt("Enter end of date range:");
+		int K = valuePrompt("Enter k:");
+		String query;
+
+		query = String.format("SELECT * FROM Booking B WHERE B.bookingDate >= '%s' AND B.bookingDate <= '%s' ORDER BY B.price DESC LIMIT '%s';", start_date, end_date, K);
+		esql.executeQuery(query);
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end topKHighestRoomPriceForADateRange
    
-   public static void topKHighestPriceBookingsForACustomer(DBProject esql){
-	  // Given a customer Name, List Top K highest booking price for a customer 
-      // Your code goes here.
-      // ...
-      // ...
+   public static void topKHighestPriceBookingsForACustomer(DBProject esql)
+   {
+	// Given a customer Name, List Top K highest booking price for a customer 
+        try
+	{
+		String f_name = valuePrompt("Enter customer first name:");
+		String l_name = valuePrompt("Enter customer last name:");
+		int K = valuePrompt("Enter k:");
+		String query;
+
+		query = String.format("SELECT B.price FROM Booking B, Customer C WHERE C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.customer ORDER BY B.price DESC LIMIT '%s';", f_name, l_name, K);
+		esql.executeQuery(query); 
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end topKHighestPriceBookingsForACustomer
    
    public static void totalCostForCustomer(DBProject esql)
