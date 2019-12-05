@@ -346,7 +346,7 @@ public class DBProject {
 			String query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
 
 			esql.executeUpdate(query);
-			
+
 			System.out.println("\nSuccessfully added maintenance company.\n");
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
@@ -355,15 +355,26 @@ public class DBProject {
 
    public static void addRepair(DBProject esql)
    {
-	  // Given repair details add repair in the DB
-      // User inputs
-	  String rID = valuePrompt("Enter hotelid:");
-	  String hotelID = valuePrompt("Enter customer first name:");
-	  String roomNo = valuePrompt("Enter customer last name:");
-	  String mCompany  = valuePrompt("Enter roomno:");
-	  String repairDate= valuePrompt("Enter booking date:");
-	  String description = valuePrompt("Enter number of people:");
-	  String repairType = valuePrompt("Enter price:");
+	// Given repair details add repair in the DB
+	try
+	{
+		// User inputs
+	  	String rID = valuePrompt("Enter hotelid:");
+	  	String hotelID = valuePrompt("Enter customer first name:");
+	  	String roomNo = valuePrompt("Enter customer last name:");
+	  	String mCompany  = valuePrompt("Enter roomno:");
+	 	String repairDate = valuePrompt("Enter booking date:");
+	  	String description = valuePrompt("Enter number of people:");
+	  	String repairType = valuePrompt("Enter price:");
+
+		String query = String.format("INSERT INTO addRepair VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s');", rID, hotelID, roomNo, mCompany, repairDate, description, repairType);
+		esql.executeUpdate(query);
+		System.out.println("\nSuccessfully added repair.\n"); 
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end addRepair
 
 	public static void bookRoom(DBProject esql){
