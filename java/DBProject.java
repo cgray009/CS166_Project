@@ -548,7 +548,8 @@ public class DBProject {
 			String hotelid = valuePrompt("Enter hotelid:");
 			String customerFName = valuePrompt("Enter customer first name:");
 			String customerLName = valuePrompt("Enter customer last name:");
-			String bookingdate = valuePrompt("Enter booking date:");
+			String startDate = valuePrompt("Enter booking start date:");
+			String endDate = valuePrompt("Enter booking end date:");
 			String query;
 			
 			
@@ -567,14 +568,10 @@ public class DBProject {
 			{
 				throw new Exception(String.format("Could not find customer with name %s %s", customerFName, customerLName));
 			}
-
-
-			// Calculate next booking id (bid)
-			bid = countRowsOfTable(esql, "booking") + 1;
 			
 			
 			// Update table
-			query = String.format("INSERT INTO booking VALUES (%d, %s, %s, %s, '%s', %s, %s);", bid, customerId, hotelid, roomno, bookingdate, noofpeople, price);
+			query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AND C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';", hotelid, cutomerFName, customerLName, startDate, endDate);
 			esql.executeUpdate(query);
 			
 			
