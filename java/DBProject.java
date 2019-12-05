@@ -583,7 +583,7 @@ public class DBProject {
 		String query;	
 			
 		// Update table
-		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AD C.fName = '%s' AND" + 
+		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AND C.fName = '%s' AND" + 
 		"C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';", hotelid, cutomerFName, customerLName, startDate, endDate);
 
 		esql.executeUpdate(query);	
@@ -594,11 +594,21 @@ public class DBProject {
 	}
    }//end totalCostForCustomer
    
-   public static void listRepairsMade(DBProject esql){
-	  // Given a Maintenance company name list all the repairs along with repairType, hotelID and roomNo
-      // Your code goes here.
-      // ...
-      // ...
+   public static void listRepairsMade(DBProject esql)
+   {
+	// Given a Maintenance company name list all the repairs along with repairType, hotelID and roomNo
+	try
+	{
+		String cName = valuePrompt("Enter company name:");
+		String query;
+
+		query = String.format("SELECT R.rID, R.hotalID, R.roomNo, R.repairType FROM Repair R, MaintenanceCompany C WHERE C.name = '%s' AND C.cmpID = R.mCompany;", cName);
+		esql.executeQuery(query);
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	} 
    }//end listRepairsMade
    
    public static void topKMaintenanceCompany(DBProject esql){
@@ -606,11 +616,21 @@ public class DBProject {
       // KEVIN
    }//end topKMaintenanceCompany
    
-   public static void numberOfRepairsForEachRoomPerYear(DBProject esql){
-	  // Given a hotelID, roomNo, get the count of repairs per year
-      // Your code goes here.
-      // ...
-      // ...
+   public static void numberOfRepairsForEachRoomPerYear(DBProject esql)
+   {
+	// Given a hotelID, roomNo, get the count of repairs per year
+	try
+	{
+		String hID = valuePrompt("Enter hotel ID:");
+		String rID = valuePrompt("Enter room ID:");
+		String query;
+
+		query = String.format("SELECT R.repairDate, count(1) FROM Repair R WHERE R.hotelID = '%s' AND R.roomNo = '%s' GROUP BY R.repairDate 
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end listRepairsMade
 
 }//end DBProject
