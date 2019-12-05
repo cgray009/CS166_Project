@@ -445,7 +445,25 @@ public class DBProject {
    
    public static void repairRequest(DBProject esql)
    {
-	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
+	// Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
+	// User inputs
+	try
+	{ 
+		String reqID = valuePrompt("Enter request ID:");
+		String managerID = valuePrompt("Enter manager ID:");
+		String repairID = valuePrompt("Enter repair ID:");
+		String repairDate = valuePrompt("Enter repair date:");
+		String description = valuePrompt("Enter description:");
+		String repairType = valuePrompt("Enter repair type:");
+
+		String query = String.format("INSERT INTO Request VALUES(%s, %s, %s, %s, %s, %,);", reqID, managerID, repairID, repairDate, description, repairType);
+		esql.executeUpdate(query);
+		System.out.println("\nSuccessfully requested repair.\n");
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
       
    }//end repairRequest
    
@@ -542,28 +560,27 @@ public class DBProject {
    
    public static void totalCostForCustomer(DBProject esql)
    {
-	  // Given a hotelID, customer Name and date range get the total cost incurred by the customer
-      try {
-			// User inputs
-			String hotelid = valuePrompt("Enter hotelid:");
-			String customerFName = valuePrompt("Enter customer first name:");
-			String customerLName = valuePrompt("Enter customer last name:");
-			String startDate = valuePrompt("Enter booking start date:");
-			String endDate = valuePrompt("Enter booking end date:");
-			String query;
+	// Given a hotelID, customer Name and date range get the total cost incurred by the customer
+	try
+	{
+		// User inputs
+		String hotelid = valuePrompt("Enter hotelid:");
+		String customerFName = valuePrompt("Enter customer first name:");
+		String customerLName = valuePrompt("Enter customer last name:");
+		String startDate = valuePrompt("Enter booking start date:");
+		String endDate = valuePrompt("Enter booking end date:");
+		String query;	
 			
-			
-			// Update table
-			query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AND C.fName = '%s' AND" + 
-			"C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';", hotelid, cutomerFName, customerLName, startDate, endDate);
+		// Update table
+		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AD C.fName = '%s' AND" + 
+		"C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';", hotelid, cutomerFName, customerLName, startDate, endDate);
 
-			esql.executeUpdate(query);
-			
-		} 
-		catch(Exception e) 
-		{
-			System.err.println (e.getMessage());
-		}
+		esql.executeUpdate(query);	
+	 } 
+	catch(Exception e) 
+	{
+		System.err.println (e.getMessage());
+	}
    }//end totalCostForCustomer
    
    public static void listRepairsMade(DBProject esql){
