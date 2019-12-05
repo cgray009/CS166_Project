@@ -553,30 +553,12 @@ public class DBProject {
 			String query;
 			
 			
-			// Calculated values
-			String customerId;
-			int bid;
-			
-			
-			// Get customer id of customer
-			query = String.format("SELECT customerid FROM customer WHERE fname='%s' AND lname='%s';", customerFName, customerLName);
-			try 
-			{
-				customerId = getFirstElement(esql, query);
-			} 
-			catch(Exception e) 
-			{
-				throw new Exception(String.format("Could not find customer with name %s %s", customerFName, customerLName));
-			}
-			
-			
 			// Update table
-			query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AND C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';", hotelid, cutomerFName, customerLName, startDate, endDate);
+			query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AND C.fName = '%s' AND 
+			"C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';"
+			, hotelid, cutomerFName, customerLName, startDate, endDate);
+
 			esql.executeUpdate(query);
-			
-			
-			// Print message success
-			System.out.println("\nSuccessfully added booking.\n");
 			
 		} 
 		catch(Exception e) 
