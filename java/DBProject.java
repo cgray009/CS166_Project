@@ -354,7 +354,7 @@ public class DBProject {
 	}
 
    public static void addRepair(DBProject esql)
-   {
+   {/*
 	  // Given repair details add repair in the DB
       // User inputs
 	  String rID = valuePrompt("Enter hotelid:");
@@ -363,7 +363,7 @@ public class DBProject {
 	  String mCompany  = valuePrompt("Enter roomno:");
 	  String repairDate= valuePrompt("Enter booking date:");
 	  String description = valuePrompt("Enter number of people:");
-	  String repairType = valuePrompt("Enter price:");
+	  String repairType = valuePrompt("Enter price:");*/
    }//end addRepair
 
 	public static void bookRoom(DBProject esql){
@@ -512,13 +512,8 @@ public class DBProject {
 			
 			
 			query = String.format(
-				"SELECT k.hotelid, k.roomno FROM " +
-				"((SELECT r.hotelid, r.roomno FROM room r) EXCEPT (SELECT b.hotelid, b.roomno FROM booking b)) a, booking k " +
-				"WHERE k.hotelid = a.hotelid AND k.roomno = a.roomno AND "+
-				"k.bookingdate >= DATE_TRUNC('week', TO_TIMESTAMP(%s, 'MM/DD/YYYY HH24:MI:SS')) AND k.bookingdate <= DATE_TRUNC('week', TO_TIMESTAMP(%s, 'MM/DD/YYYY HH24:MI:SS')) + 7;",
-				date, date);
+				"SELECT k.roomno FROM ((SELECT r.hotelid, r.roomno FROM room r) EXCEPT (SELECT b.hotelid, b.roomno FROM booking b WHERE b.bookingdate >= '%s'::date AND b.bookingdate <= ('%s'::date + '7 days'::interval))) k WHERE k.hotelid=%s;", date, date, hotelid);
 			esql.executeQuery(query);
-			
 			
 			
 		} catch (Exception e) {
@@ -541,7 +536,7 @@ public class DBProject {
    }//end topKHighestPriceBookingsForACustomer
    
    public static void totalCostForCustomer(DBProject esql)
-   {
+   {/*
 	  // Given a hotelID, customer Name and date range get the total cost incurred by the customer
       try {
 			// User inputs
@@ -585,7 +580,7 @@ public class DBProject {
 		catch(Exception e) 
 		{
 			System.err.println (e.getMessage());
-		}
+		}*/
    }//end totalCostForCustomer
    
    public static void listRepairsMade(DBProject esql){
@@ -595,10 +590,16 @@ public class DBProject {
       // ...
    }//end listRepairsMade
    
-   public static void topKMaintenanceCompany(DBProject esql){
-	  // List Top K Maintenance Company Names based on total repair count (descending order)
-      // KEVIN
-   }//end topKMaintenanceCompany
+	public static void topKMaintenanceCompany(DBProject esql){
+		// List Top K Maintenance Company Names based on total repair count (descending order)
+		// KEVIN
+		try {
+			String query = "SELECT m.name, j.repairCount FROM(SELECT r.mcompany, COUNT(r.*) AS repairCount FROM repair r GROUP BY r.mcompany) j, maintenancecompany m WHERE m.cmpid = j.mcompany ORDER BY j.repairCount DESC;";
+			esql.executeQuery(query);
+		} catch (Exception e) {
+			System.err.println (e.getMessage());
+		}
+	}
    
    public static void numberOfRepairsForEachRoomPerYear(DBProject esql){
 	  // Given a hotelID, roomNo, get the count of repairs per year
