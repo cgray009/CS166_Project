@@ -346,7 +346,7 @@ public class DBProject {
 			String query = String.format("INSERT INTO maintenancecompany VALUES (%s, '%s', '%s', '%s');", cmpid, name, address, iscertified);
 
 			esql.executeUpdate(query);
-			
+
 			System.out.println("\nSuccessfully added maintenance company.\n");
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
@@ -354,16 +354,27 @@ public class DBProject {
 	}
 
    public static void addRepair(DBProject esql)
-   {/*
-	  // Given repair details add repair in the DB
-      // User inputs
-	  String rID = valuePrompt("Enter hotelid:");
-	  String hotelID = valuePrompt("Enter customer first name:");
-	  String roomNo = valuePrompt("Enter customer last name:");
-	  String mCompany  = valuePrompt("Enter roomno:");
-	  String repairDate= valuePrompt("Enter booking date:");
-	  String description = valuePrompt("Enter number of people:");
-	  String repairType = valuePrompt("Enter price:");*/
+   {
+	// Given repair details add repair in the DB
+	try
+	{
+		// User inputs
+	  	String rID = valuePrompt("Enter hotelid:");
+	  	String hotelID = valuePrompt("Enter customer first name:");
+	  	String roomNo = valuePrompt("Enter customer last name:");
+	  	String mCompany  = valuePrompt("Enter roomno:");
+	 	String repairDate = valuePrompt("Enter booking date:");
+	  	String description = valuePrompt("Enter number of people:");
+	  	String repairType = valuePrompt("Enter price:");
+
+		String query = String.format("INSERT INTO addRepair VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s');", rID, hotelID, roomNo, mCompany, repairDate, description, repairType);
+		esql.executeUpdate(query);
+		System.out.println("\nSuccessfully added repair.\n"); 
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end addRepair
 
 	public static void bookRoom(DBProject esql){
@@ -445,7 +456,25 @@ public class DBProject {
    
    public static void repairRequest(DBProject esql)
    {
-	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
+	// Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
+	// User inputs
+	try
+	{ 
+		String reqID = valuePrompt("Enter request ID:");
+		String managerID = valuePrompt("Enter manager ID:");
+		String repairID = valuePrompt("Enter repair ID:");
+		String repairDate = valuePrompt("Enter repair date:");
+		String description = valuePrompt("Enter description:");
+		String repairType = valuePrompt("Enter repair type:");
+
+		String query = String.format("INSERT INTO Request VALUES(%s, %s, %s, %s, %s, %,);", reqID, managerID, repairID, repairDate, description, repairType);
+		esql.executeUpdate(query);
+		System.out.println("\nSuccessfully requested repair.\n");
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
       
    }//end repairRequest
    
@@ -521,73 +550,84 @@ public class DBProject {
 		}
 	}
    
-   public static void topKHighestRoomPriceForADateRange(DBProject esql){
-	  // List Top K Rooms with the highest price for a given date range
-      // Your code goes here.
-      // ...
-      // ...
+   public static void topKHighestRoomPriceForADateRange(DBProject esql)
+   {
+	// List Top K Rooms with the highest price for a given date range
+        try
+	{
+		String start_date = valuePrompt("Enter beginning of date range:");
+		String end_date = valuePrompt("Enter end of date range:");
+		int K = valuePrompt("Enter k:");
+		String query;
+
+		query = String.format("SELECT * FROM Booking B WHERE B.bookingDate >= '%s' AND B.bookingDate <= '%s' ORDER BY B.price DESC LIMIT '%s';", start_date, end_date, K);
+		esql.executeQuery(query);
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end topKHighestRoomPriceForADateRange
    
-   public static void topKHighestPriceBookingsForACustomer(DBProject esql){
-	  // Given a customer Name, List Top K highest booking price for a customer 
-      // Your code goes here.
-      // ...
-      // ...
+   public static void topKHighestPriceBookingsForACustomer(DBProject esql)
+   {
+	// Given a customer Name, List Top K highest booking price for a customer 
+        try
+	{
+		String f_name = valuePrompt("Enter customer first name:");
+		String l_name = valuePrompt("Enter customer last name:");
+		int K = valuePrompt("Enter k:");
+		String query;
+
+		query = String.format("SELECT B.price FROM Booking B, Customer C WHERE C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.customer ORDER BY B.price DESC LIMIT '%s';", f_name, l_name, K);
+		esql.executeQuery(query); 
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end topKHighestPriceBookingsForACustomer
    
    public static void totalCostForCustomer(DBProject esql)
-   {/*
-	  // Given a hotelID, customer Name and date range get the total cost incurred by the customer
-      try {
-			// User inputs
-			String hotelid = valuePrompt("Enter hotelid:");
-			String customerFName = valuePrompt("Enter customer first name:");
-			String customerLName = valuePrompt("Enter customer last name:");
-			String bookingdate = valuePrompt("Enter booking date:");
-			String query;
+   {
+	// Given a hotelID, customer Name and date range get the total cost incurred by the customer
+	try
+	{
+		// User inputs
+		String hotelid = valuePrompt("Enter hotelid:");
+		String customerFName = valuePrompt("Enter customer first name:");
+		String customerLName = valuePrompt("Enter customer last name:");
+		String startDate = valuePrompt("Enter booking start date:");
+		String endDate = valuePrompt("Enter booking end date:");
+		String query;	
 			
-			
-			// Calculated values
-			String customerId;
-			int bid;
-			
-			
-			// Get customer id of customer
-			query = String.format("SELECT customerid FROM customer WHERE fname='%s' AND lname='%s';", customerFName, customerLName);
-			try 
-			{
-				customerId = getFirstElement(esql, query);
-			} 
-			catch(Exception e) 
-			{
-				throw new Exception(String.format("Could not find customer with name %s %s", customerFName, customerLName));
-			}
+		// Update table
+		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AND C.fName = '%s' AND" + 
+		"C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';", hotelid, cutomerFName, customerLName, startDate, endDate);
 
-
-			// Calculate next booking id (bid)
-			bid = countRowsOfTable(esql, "booking") + 1;
-			
-			
-			// Update table
-			query = String.format("INSERT INTO booking VALUES (%d, %s, %s, %s, '%s', %s, %s);", bid, customerId, hotelid, roomno, bookingdate, noofpeople, price);
-			esql.executeUpdate(query);
-			
-			
-			// Print message success
-			System.out.println("\nSuccessfully added booking.\n");
-			
-		} 
-		catch(Exception e) 
-		{
-			System.err.println (e.getMessage());
-		}*/
+		esql.executeUpdate(query);	
+	 } 
+	catch(Exception e) 
+	{
+		System.err.println (e.getMessage());
+	}
    }//end totalCostForCustomer
    
-   public static void listRepairsMade(DBProject esql){
-	  // Given a Maintenance company name list all the repairs along with repairType, hotelID and roomNo
-      // Your code goes here.
-      // ...
-      // ...
+   public static void listRepairsMade(DBProject esql)
+   {
+	// Given a Maintenance company name list all the repairs along with repairType, hotelID and roomNo
+	try
+	{
+		String cName = valuePrompt("Enter company name:");
+		String query;
+
+		query = String.format("SELECT R.rID, R.hotalID, R.roomNo, R.repairType FROM Repair R, MaintenanceCompany C WHERE C.name = '%s' AND C.cmpID = R.mCompany;", cName);
+		esql.executeQuery(query);
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	} 
    }//end listRepairsMade
    
 	public static void topKMaintenanceCompany(DBProject esql){
@@ -601,11 +641,21 @@ public class DBProject {
 		}
 	}
    
-   public static void numberOfRepairsForEachRoomPerYear(DBProject esql){
-	  // Given a hotelID, roomNo, get the count of repairs per year
-      // Your code goes here.
-      // ...
-      // ...
+   public static void numberOfRepairsForEachRoomPerYear(DBProject esql)
+   {
+	// Given a hotelID, roomNo, get the count of repairs per year
+	try
+	{
+		String hID = valuePrompt("Enter hotel ID:");
+		String rID = valuePrompt("Enter room ID:");
+		String query;
+
+		// query = String.format("SELECT R.repairDate, count(1) FROM Repair R WHERE R.hotelID = '%s' AND R.roomNo = '%s' GROUP BY R.repairDate 
+	}
+	catch(Exception e)
+	{
+		System.err.println(e.getMessage());
+	}
    }//end listRepairsMade
 
 }//end DBProject
