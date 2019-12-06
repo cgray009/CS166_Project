@@ -306,7 +306,7 @@ public class DBProject {
 		   String DOB = valuePrompt("Enter date of birth:");  
 		   String gender = valuePrompt("Enter gender type:");
 		   
-		   String query = String.format("INSERT INTO customer VALUES (%s, %s, '%s', %s, %s, '%s', '%s);", customerID, fName, lName, Address, phNo, DOB, gender);
+		   String query = String.format("INSERT INTO customer VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s');", customerID, fName, lName, Address, phNo, DOB, gender);
 		   esql.executeUpdate(query);
 	   }
 	   catch(Exception e)
@@ -363,11 +363,11 @@ public class DBProject {
 	  	String hotelID = valuePrompt("Enter customer first name:");
 	  	String roomNo = valuePrompt("Enter customer last name:");
 	  	String mCompany  = valuePrompt("Enter roomno:");
-	 	String repairDate = valuePrompt("Enter booking date:");
+	 	String repairDate = valuePrompt("Enter repair date:");
 	  	String description = valuePrompt("Enter number of people:");
 	  	String repairType = valuePrompt("Enter price:");
 
-		String query = String.format("INSERT INTO addRepair VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s');", rID, hotelID, roomNo, mCompany, repairDate, description, repairType);
+		String query = String.format("INSERT INTO repair VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s');", rID, hotelID, roomNo, mCompany, repairDate, description, repairType);
 		esql.executeUpdate(query);
 		System.out.println("\nSuccessfully added repair.\n"); 
 	}
@@ -419,6 +419,7 @@ public class DBProject {
 			
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
+			System.out.println("\nFailed to add booking.\n");
 		}
 	}
 
@@ -451,6 +452,7 @@ public class DBProject {
 			
 		} catch(Exception e) {
 			System.err.println (e.getMessage());
+			System.out.println("\nFailed to assign cleaning staff to room.\n");
 		}
    }
    
@@ -501,6 +503,7 @@ public class DBProject {
 			
 		} catch (Exception e) {
 			System.err.println (e.getMessage());
+			System.out.println("\nFailed to count available rooms.\n");
 		}
 	}
    
@@ -527,6 +530,7 @@ public class DBProject {
 			
 		} catch (Exception e) {
 			System.err.println (e.getMessage());
+			System.out.println("\nFailed to count booked rooms.\n");
 		}
    }
    
@@ -547,6 +551,7 @@ public class DBProject {
 			
 		} catch (Exception e) {
 			System.err.println (e.getMessage());
+			System.out.println("\nFailed to find room bookings for the specified week.\n");
 		}
 	}
    
@@ -557,7 +562,7 @@ public class DBProject {
 	{
 		String start_date = valuePrompt("Enter beginning of date range:");
 		String end_date = valuePrompt("Enter end of date range:");
-		int K = valuePrompt("Enter k:");
+		String K = valuePrompt("Enter k:");
 		String query;
 
 		query = String.format("SELECT * FROM Booking B WHERE B.bookingDate >= '%s' AND B.bookingDate <= '%s' ORDER BY B.price DESC LIMIT '%s';", start_date, end_date, K);
@@ -576,7 +581,7 @@ public class DBProject {
 	{
 		String f_name = valuePrompt("Enter customer first name:");
 		String l_name = valuePrompt("Enter customer last name:");
-		int K = valuePrompt("Enter k:");
+		String K = valuePrompt("Enter k:");
 		String query;
 
 		query = String.format("SELECT B.price FROM Booking B, Customer C WHERE C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.customer ORDER BY B.price DESC LIMIT '%s';", f_name, l_name, K);
@@ -602,8 +607,7 @@ public class DBProject {
 		String query;	
 			
 		// Update table
-		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%' AND C.fName = '%s' AND" + 
-		"C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%' AND B.bookingDate <= '%s';", hotelid, cutomerFName, customerLName, startDate, endDate);
+		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%s' AND C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%s' AND B.bookingDate <= '%s';", hotelid, customerFName, customerLName, startDate, endDate);
 
 		esql.executeUpdate(query);	
 	 } 
@@ -634,10 +638,12 @@ public class DBProject {
 		// List Top K Maintenance Company Names based on total repair count (descending order)
 		// KEVIN
 		try {
-			String query = "SELECT m.name, j.repairCount FROM(SELECT r.mcompany, COUNT(r.*) AS repairCount FROM repair r GROUP BY r.mcompany) j, maintenancecompany m WHERE m.cmpid = j.mcompany ORDER BY j.repairCount DESC;";
+			String k = valuePrompt("Enter k:");
+			String query = String.format("SELECT m.name, j.repairCount FROM(SELECT r.mcompany, COUNT(r.*) AS repairCount FROM repair r GROUP BY r.mcompany) j, maintenancecompany m WHERE m.cmpid = j.mcompany ORDER BY j.repairCount DESC LIMIT %s;", k);
 			esql.executeQuery(query);
 		} catch (Exception e) {
 			System.err.println (e.getMessage());
+			System.out.println("\nFailed to find the top k maintenance companies.\n");
 		}
 	}
    
