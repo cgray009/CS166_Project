@@ -298,7 +298,6 @@ public class DBProject {
    {
 	   try 
 	   {
-		   String customerID = valuePrompt("Enter costumer ID:");
 		   String fName = valuePrompt("Enter first name:");
 		   String lName = valuePrompt("Enter last name:");  
 		   String Address = valuePrompt("Enter address:");
@@ -306,8 +305,9 @@ public class DBProject {
 		   String DOB = valuePrompt("Enter date of birth:");  
 		   String gender = valuePrompt("Enter gender type:");
 		   
-		   String query = String.format("INSERT INTO customer VALUES (%s, '%s', '%s', '%s', %s, '%s', '%s');", customerID, fName, lName, Address, phNo, DOB, gender);
+		   String query = String.format("INSERT INTO customer VALUES ((SELECT MAX(customerid) + 1 FROM customer), '%s', '%s', '%s', %s, '%s', '%s');", fName, lName, Address, phNo, DOB, gender);
 		   esql.executeUpdate(query);
+		   System.out.println("\nSuccessfully added customer.\n");
 	   }
 	   catch(Exception e)
 	   {
@@ -433,17 +433,9 @@ public class DBProject {
 			String roomno = valuePrompt("Enter room no:");
 			String query;
 			
-			
-			// Calculated values
-			int asgid;
-			
-			
-			// Calculate next assignment id (asgid)
-			asgid = countRowsOfTable(esql, "assigned") + 1;
 
-			
 			// Update table
-			query = String.format("INSERT INTO assigned VALUES (%d, %s, %s, %s);", asgid, staffssn, hotelid, roomno);
+			query = String.format("INSERT INTO assigned VALUES ((SELECT MAX(asgid) + 1 FROM assigned), %s, %s, %s);", staffssn, hotelid, roomno);
 			esql.executeUpdate(query);
 			
 			
@@ -462,14 +454,14 @@ public class DBProject {
 	// User inputs
 	try
 	{ 
-		String reqID = valuePrompt("Enter request ID:");
 		String managerID = valuePrompt("Enter manager ID:");
 		String repairID = valuePrompt("Enter repair ID:");
-		String repairDate = valuePrompt("Enter repair date:");
+		String requestDate = valuePrompt("Enter request date:");
 		String description = valuePrompt("Enter description:");
-		String repairType = valuePrompt("Enter repair type:");
 
-		String query = String.format("INSERT INTO Request VALUES(%s, %s, %s, %s, %s, %,);", reqID, managerID, repairID, repairDate, description, repairType);
+		int reqID = countRowsOfTable(esql, "request") + 1;
+
+		String query = String.format("INSERT INTO Request VALUES(%d, %s, %s, '%s', '%s');", reqID, managerID, repairID, requestDate, description);
 		esql.executeUpdate(query);
 		System.out.println("\nSuccessfully requested repair.\n");
 	}
@@ -607,9 +599,9 @@ public class DBProject {
 		String query;	
 			
 		// Update table
-		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%s' AND C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.costumer AND B.bookingDate >= '%s' AND B.bookingDate <= '%s';", hotelid, customerFName, customerLName, startDate, endDate);
+		query = String.format("SELECT sum(B.price) FROM Booking B, Customer C WHERE B.hotelID = '%s' AND C.fName = '%s' AND C.lName = '%s' AND C.customerID = B.customer AND B.bookingDate >= '%s' AND B.bookingDate <= '%s';", hotelid, customerFName, customerLName, startDate, endDate);
 
-		esql.executeUpdate(query);	
+		esql.executeQuery(query);	
 	 } 
 	catch(Exception e) 
 	{
@@ -625,7 +617,7 @@ public class DBProject {
 		String cName = valuePrompt("Enter company name:");
 		String query;
 
-		query = String.format("SELECT R.rID, R.hotalID, R.roomNo, R.repairType FROM Repair R, MaintenanceCompany C WHERE C.name = '%s' AND C.cmpID = R.mCompany;", cName);
+		query = String.format("SELECT R.rID, R.hotelID, R.roomNo, R.repairType FROM Repair R, MaintenanceCompany C WHERE C.name = '%s' AND C.cmpID = R.mCompany;", cName);
 		esql.executeQuery(query);
 	}
 	catch(Exception e)
@@ -639,7 +631,7 @@ public class DBProject {
 		// KEVIN
 		try {
 			String k = valuePrompt("Enter k:");
-			String query = String.format("SELECT m.name, j.repairCount FROM(SELECT r.mcompany, COUNT(r.*) AS repairCount FROM repair r GROUP BY r.mcompany) j, maintenancecompany m WHERE m.cmpid = j.mcompany ORDER BY j.repairCount DESC LIMIT %s;", k);
+			String query = String.format("SELECT m.name, j.repairs FROM(SELECT r.mcompany, COUNT(r.*) AS repairs FROM repair r GROUP BY r.mcompany) j, maintenancecompany m WHERE m.cmpid = j.mcompany ORDER BY j.repairs DESC LIMIT %s;", k);
 			esql.executeQuery(query);
 		} catch (Exception e) {
 			System.err.println (e.getMessage());
@@ -652,15 +644,21 @@ public class DBProject {
 	// Given a hotelID, roomNo, get the count of repairs per year
 	try
 	{
-		String hID = valuePrompt("Enter hotel ID:");
-		String rID = valuePrompt("Enter room ID:");
+		String hotelid = valuePrompt("Enter hotel ID:");
+		String roomno = valuePrompt("Enter room number:");
 		String query;
 
-		// query = String.format("SELECT R.repairDate, count(1) FROM Repair R WHERE R.hotelID = '%s' AND R.roomNo = '%s' GROUP BY R.repairDate 
+		query = String.format("SELECT COUNT(r.*) AS repairs, EXTRACT(YEAR FROM r.repairdate) AS year FROM repair r WHERE r.hotelid=%s AND r.roomno=%s GROUP BY EXTRACT(YEAR FROM r.repairdate);", hotelid, roomno);
+
+		int rows = esql.executeQuery(query);
+		if(rows == 0) {
+			System.out.println(String.format("\nNo repairs for this room.\n", roomno, hotelid));
+		}
 	}
 	catch(Exception e)
 	{
 		System.err.println(e.getMessage());
+		System.out.println("\nFailed to find number of repairs for room per year.\n");
 	}
    }//end listRepairsMade
 
